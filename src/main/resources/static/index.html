@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Husforsikring | Priskalkulator</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <script src="index.js" defer></script>
+    
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            async defer></script>
+
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('squareMeters');
+            const number = document.getElementById('squareMetersInput');
+            const output = document.getElementById('squareMetersValue');
+
+            slider.addEventListener('input', () => {
+                number.value = slider.value;
+                output.textContent = slider.value;
+            });
+
+            number.addEventListener('input', () => {
+                const value = Number(number.value);
+
+                if (number.value !== '' &&
+                    Number.isFinite(value) &&
+                    value >= 40 &&
+                    value <= 300) {
+                    slider.value = String(value);
+                    output.textContent = String(value);
+                }
+            });
+
+            document.getElementById('insuranceForm')
+                .addEventListener('submit', () => {
+                    if (number.checkValidity()) {
+                        slider.value = number.value;
+                        output.textContent = number.value;
+                    }
+                }, true);
+        });
+    </script>
+</head>
+
+<body class="bg-light">
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <span class="badge text-bg-primary rounded-pill px-3 py-2 mb-3">
+            HUSFORSIKRING
+        </span>
+
+        <h1 class="fw-bold">
+            Hva koster det å forsikre boligen din?
+        </h1>
+
+        <p class="text-secondary">
+            Fyll inn noen opplysninger og få et veiledende prisestimat.
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">       
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+
+                    <h2 class="h4 fw-bold mb-4">Om boligen din</h2>
+
+                    <form id="insuranceForm">
+
+                        <div class="mb-3">
+                            <label for="streetName" class="form-label">
+                                Gatenavn
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="streetName"
+                                   placeholder="F.eks. Storgata"
+                                   required>
+                        </div>                       
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col-6">
+                                <label for="houseNumber" class="form-label">
+                                    Husnummer
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="houseNumber"
+                                       min="1"
+                                       required>
+                            </div>
+
+                            <div class="col-6">
+                                <label for="postalCode" class="form-label">
+                                    Postnummer
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="postalCode"
+                                       inputmode="numeric"
+                                       pattern="[0-9]{4}"
+                                       maxlength="4"
+                                       placeholder="0155"
+                                       required>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                        <label for="squareMetersInput"
+                            class="form-label fw-semibold">
+                            Boligens størrelse (m²)
+                        </label>
+
+                        <div class="d-flex align-items-center gap-3">                            
+                            <input type="number"
+                                class="form-control"
+                                id="squareMetersInput"
+                                min="20"
+                                step="1"
+                                value="120"
+                                required
+                                aria-describedby="areaHelp"
+                                style="width: 100px; flex-shrink: 0;">
+                            
+                            <div class="flex-grow-1">
+
+                                <input type="range"
+                                    class="form-range mb-1"
+                                    id="squareMeters"
+                                    min="20"
+                                    max="500"
+                                    step="1"
+                                    value="120"
+                                    aria-label="Juster boligens størrelse">
+
+                                <div class="d-flex justify-content-between small text-secondary">
+                                    <span>20 m²</span>
+                                    <span id="sliderMaxLabel">500 m²</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <p id="areaHelp" class="form-text">
+                            Skriv inn arealet eller bruk skyveknappen.
+                        </p>
+
+                        <span id="squareMetersValue" class="visually-hidden">120</span>
+
+                    </div>                                  
+
+                        <div class="mb-4">
+                            <label for="byggeaar" class="form-label">
+                                Byggeår
+                            </label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="byggeaar"
+                                   min="1970"
+                                   max="2026"
+                                   placeholder="F.eks. 1995"
+                                   required>
+                        </div>
+
+                        <div id="formError"
+                             class="alert alert-danger d-none"
+                             role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <div class="cf-turnstile"
+                                data-sitekey="0x4AAAAAAFS_zcX6NDvdvvDh"
+                                data-theme="auto"                               
+                                data-callback="onTurnstileSuccess"
+                                data-expired-callback="onTurnstileExpired"
+                                data-error-callback="onTurnstileError">
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                id="calculateButton"
+                                class="btn btn-primary btn-lg w-100 rounded-3"
+                                disabled>
+                            Beregn prisestimat
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+
+                    <h2 class="h4 fw-bold mb-3">Ditt prisestimat</h2>
+
+                    <div id="resultPlaceholder"
+                         class="text-center text-secondary py-5">
+                        <div class="fs-1 mb-3">🏡</div>
+                        <p class="mb-0">
+                            Fyll inn informasjon om boligen for å se
+                            ditt estimerte forsikringstilbud.
+                        </p>
+                    </div>
+
+                    <div id="loadingIndicator"
+                         class="text-center py-5 d-none"
+                         role="status">
+                        <div class="spinner-border text-primary mb-3"></div>
+                        <p class="text-secondary">
+                            Kontrollerer adresse og beregner pris ...
+                        </p>
+                    </div>
+
+                    <div id="quoteResult" class="d-none">
+
+                        <div class="bg-primary bg-opacity-10 rounded-4 p-4 mb-4 text-center">
+                            <p class="text-secondary mb-1">
+                                Estimert månedspris
+                            </p>
+                            <div class="display-5 fw-bold text-primary">
+                                <span id="monthlyPremium">–</span> kr
+                            </div>
+                            <span class="text-secondary">per måned</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary">Estimert årspris</span>
+                            <strong><span id="annualPremium">–</span> kr</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary">Boligareal</span>
+                            <strong><span id="resultSquareMeters">–</span> m²</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-secondary">Byggeår</span>
+                            <strong id="resultBuildingYear">–</strong>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-secondary">Tilbudsstatus</span>
+                            <span id="quoteStatus"
+                                  class="badge text-bg-info">
+                                Tilbud opprettet
+                            </span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button"
+                                    id="offerButton"
+                                    class="btn btn-success">
+                                Send meg tilbudet
+                            </button>
+
+                            <button type="button"
+                                    id="contactButton"
+                                    class="btn btn-outline-primary">
+                                Jeg vil snakke med en rådgiver
+                            </button>
+                        </div>
+
+                        <form id="contactForm"
+                              class="border rounded-3 p-3 mt-3 d-none">
+
+                            <h3 id="contactTitle" class="h6 fw-bold"></h3>
+
+                            <div class="mb-2">
+                                <label for="firstName" class="form-label">
+                                    Fornavn
+                                </label>
+                                <input id="firstName"
+                                       class="form-control"
+                                       maxlength="100"
+                                       required>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="email" class="form-label">
+                                    E-post
+                                </label>
+                                <input id="email"
+                                       type="email"
+                                       class="form-control"
+                                       maxlength="255"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">
+                                    Telefon
+                                    <span id="phoneOptional">(valgfritt)</span>
+                                </label>
+                                <input id="phone"
+                                       type="tel"
+                                       class="form-control"
+                                       maxlength="20">
+                            </div>
+
+                            <button id="contactSubmitButton"
+                                    type="submit"
+                                    class="btn btn-primary w-100">
+                                Send
+                            </button>
+                        </form>
+
+                        <div id="contactMessage"
+                             class="alert alert-success mt-3 d-none"
+                             role="status"></div>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
